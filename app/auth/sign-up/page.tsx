@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -9,126 +9,167 @@ export default function SignUpPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleSignUp(event: FormEvent<HTMLFormElement>) {
+  async function handleSignUp(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
-    setLoading(true);
-    setMessage("");
     setError("");
 
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
+    if (!email || !password || !confirmPassword) {
+      setError("Please fill in all fields.");
       return;
     }
 
-    setMessage(
-      "Account created successfully. Check your email if confirmation is required."
-    );
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-    setLoading(false);
+    if (password.length < 6) {
+      setError(
+        "Password must be at least 6 characters."
+      );
+      return;
+    }
 
-    setTimeout(() => {
-      router.push("/auth/login");
-    }, 1500);
+    try {
+      setLoading(true);
+
+      const supabase = createClient();
+
+      const { data, error: signUpError } =
+        await supabase.auth.signUp({
+          email,
+          password,
+        });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      if (!data.session) {
+        setError(
+          "Account created. Please check your email to confirm your account."
+        );
+        return;
+      }
+
+      router.replace("/dashboard");
+      router.refresh();
+    } catch (error) {
+      console.error("Sign up error:", error);
+
+      setError(
+        "Something went wrong while creating your account."
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">
-            Create Account
+    <main className="min-h-screen bg-zinc-950 px-6 py-20 text-white">
+      <div className="mx-auto max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold">
+            Create your account
           </h1>
 
-          <p className="mt-2 text-sm text-zinc-400">
-            Start using AI YouTube Coach
+          <p className="mt-3 text-zinc-400">
+            Start growing your YouTube channel with AI.
           </p>
         </div>
 
-        <form onSubmit={handleSignUp} className="mt-8 space-y-5">
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium"
-            >
-              Email
-            </label>
-
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium"
-            >
-              Password
-            </label>
-
-            <input
-              id="password"
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <div className="rounded-xl border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-300">
-              {error}
-            </div>
-          )}
-
-          {message && (
-            <div className="rounded-xl border border-green-900 bg-green-950/40 px-4 py-3 text-sm text-green-300">
-              {message}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-white px-5 py-3 font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8">
+          <form
+            onSubmit={handleSignUp}
+            className="space-y-5"
           >
-            {loading ? "Creating account..." : "Create Account"}
-          </button>
-        </form>
+            <div>
+              <label className="mb-2 block text-sm text-zinc-300">
+                Email
+              </label>
 
-        <p className="mt-6 text-center text-sm text-zinc-500">
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={() => router.push("/auth/login")}
-            className="font-medium text-white hover:underline"
-          >
-            Sign in
-          </button>
-        </p>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) =>
+                  setEmail(event.target.value)
+                }
+                placeholder="you@example.com"
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-white outline-none focus:border-zinc-400"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm text-zinc-300">
+                Password
+              </label>
+
+              <input
+                type="password"
+                value={password}
+                onChange={(event) =>
+                  setPassword(event.target.value)
+                }
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-white outline-none focus:border-zinc-400"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm text-zinc-300">
+                Confirm Password
+              </label>
+
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(event) =>
+                  setConfirmPassword(event.target.value)
+                }
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-white outline-none focus:border-zinc-400"
+                disabled={loading}
+              />
+            </div>
+
+            {error && (
+              <div className="rounded-xl border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-400">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading
+                ? "Creating account..."
+                : "Create Account"}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-zinc-500">
+            Already have an account?{" "}
+            <a
+              href="/auth/login"
+              className="text-white hover:underline"
+            >
+              Sign In
+            </a>
+          </div>
+        </div>
       </div>
     </main>
   );
