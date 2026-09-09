@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Home() {
@@ -14,9 +15,12 @@ export default function Home() {
             AI YouTube Coach
           </div>
 
-          <button className="rounded-lg border border-zinc-700 px-5 py-2.5 text-sm font-medium text-zinc-200 transition hover:bg-zinc-800">
-            Sign In
-          </button>
+          <Link
+  href="/auth/login"
+  className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-800"
+>
+  Sign In
+</Link>
         </div>
       </header>
 
