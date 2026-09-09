@@ -10,19 +10,28 @@ export default function Home() {
     <main className="min-h-screen bg-zinc-950 text-white">
       {/* Header */}
       <header className="border-b border-zinc-900">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <div className="text-xl font-bold tracking-tight">
-            AI YouTube Coach
-          </div>
+  <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+    <div className="text-xl font-bold tracking-tight">
+      AI YouTube Coach
+    </div>
 
-          <Link
-  href="/auth/login"
-  className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-800"
->
-  Sign In
-</Link>
-        </div>
-      </header>
+    <div className="flex items-center gap-3">
+      <Link
+        href="/auth/login"
+        className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-800"
+      >
+        Sign In
+      </Link>
+
+      <Link
+        href="/auth/sign-up"
+        className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200"
+      >
+        Sign Up
+      </Link>
+    </div>
+  </div>
+</header>
 
       {/* Hero */}
       <section className="relative overflow-hidden px-6 pb-24 pt-24 sm:pt-32">
