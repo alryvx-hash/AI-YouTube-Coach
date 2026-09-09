@@ -326,8 +326,57 @@ function DashboardContent() {
         // -----------------------------------------------------
 
         if (!isConnected) {
-          return;
-        }
+  // -----------------------------------------------------
+  // No YouTube connection = ZERO REAL DATA
+  // -----------------------------------------------------
+
+  setChannelStats({
+    views: 0,
+    subscribers: 0,
+    watchTime: 0,
+    ctr: 0,
+  });
+
+  setAnalytics({
+    "7d": [],
+    "28d": [],
+    "90d": [],
+  });
+
+  setDashboardTopVideos([]);
+
+  setInsights({
+    summary: "",
+    recommendation: "",
+  });
+
+  setAnalysis({
+    performanceScore: 0,
+    strengths: [],
+    weaknesses: [],
+    recommendations: [],
+  });
+
+  setYoutubeChannel(null);
+  setYoutubeVideos([]);
+  setVideoAnalytics(null);
+
+  setYoutubeAnalytics({
+    "7d": [],
+    "28d": [],
+    "90d": [],
+  });
+
+  setYoutubePeriodStats({
+    views: 0,
+    likes: 0,
+    comments: 0,
+    estimatedMinutesWatched: 0,
+    subscribersGained: 0,
+  });
+
+  return;
+}
 
         // -----------------------------------------------------
         // YouTube channel
@@ -775,6 +824,33 @@ if (videoAnalyticsResponse.ok) {
       setYoutubeChannel(null);
       setYoutubeVideos([]);
       setVideoAnalytics(null);
+
+      setChannelStats({
+  views: 0,
+  subscribers: 0,
+  watchTime: 0,
+  ctr: 0,
+});
+
+setAnalytics({
+  "7d": [],
+  "28d": [],
+  "90d": [],
+});
+
+setDashboardTopVideos([]);
+
+setInsights({
+  summary: "",
+  recommendation: "",
+});
+
+setAnalysis({
+  performanceScore: 0,
+  strengths: [],
+  weaknesses: [],
+  recommendations: [],
+});
 
       setYoutubeAnalytics({
         "7d": [],
